@@ -1,5 +1,4 @@
 import React from "react";
-import XLSXEx from "xlsx-extract";
 
 function App() {
   const [filePath, setFilePath] = React.useState<string | null>(null);
@@ -17,16 +16,9 @@ function App() {
     []
   );
 
-  React.useEffect(() => {
-    if (filePath) {
-      const XLSX = XLSXEx.XLSX;
-      console.log(XLSX);
-    }
-  }, [filePath]);
-
   return (
     <form>
-      <input type="file" name="file" onChange={onExcel} />;
+      <input type="file" name="file" onChange={onExcel} />
     </form>
   );
 }
