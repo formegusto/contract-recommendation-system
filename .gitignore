@@ -1,3 +1,5 @@
 .ipynb_checkpoints
 
 datas
+dist
+node_modules

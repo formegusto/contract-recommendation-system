@@ -1,0 +1,16 @@
+{
+  "name": "js-excel-read",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "tsc && node dist"
+  },
+  "dependencies": {
+    "exceljs": "^4.3.0",
+    "xlsx-extract": "^0.1.3"
+  },
+  "devDependencies": {
+    "@types/exceljs": "^1.3.0"
+  }
+}
