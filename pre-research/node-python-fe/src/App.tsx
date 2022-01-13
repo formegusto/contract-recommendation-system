@@ -1,25 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import axios from "axios";
 
 function App() {
+  const formData = React.useRef<FormData>(new FormData());
+
+  const onChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.name && e.target.files) {
+        if (e.target.files[0])
+          formData.current.append(e.target.name, e.target.files[0]);
+      }
+    },
+    [formData]
+  );
+
+  const onSubmit = React.useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+
+      axios.post("http://localhost:8080", formData.current, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    },
+    [formData]
+  );
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <h1>Server Sent Test</h1>
+      <form onSubmit={onSubmit}>
+        <input type="file" name="datas" onChange={onChange} />
+        <button type="submit">Test!</button>
+      </form>
+    </>
   );
 }
 
