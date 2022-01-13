@@ -1,0 +1,12 @@
+{
+  "name": "js-python",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "tsc && node dist"
+  },
+  "dependencies": {
+    "child_process": "^1.0.2"
+  }
+}
