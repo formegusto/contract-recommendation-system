@@ -1,10 +1,20 @@
 import React from "react";
 import axios from "axios";
+import { connect } from "socket.io-client";
 
 function App() {
   const formData = React.useRef<FormData>(new FormData());
 
-  React.useEffect(() => {}, []);
+  React.useEffect(() => {
+    const io = connect("http://localhost:8080", {
+      path: "/socket.io",
+      transports: ["websocket"],
+    });
+
+    io.on("connect", () => {
+      console.log("socket connected :)");
+    });
+  }, []);
 
   const onChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

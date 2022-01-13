@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import childProcess from "child_process";
 import SseStream from "ssestream";
+import { Server } from "socket.io";
 
 class Routes {
   routes: express.Router;
@@ -28,6 +29,8 @@ class Routes {
 
   setRouter() {
     this.routes.get("/", (req: express.Request, res: express.Response) => {
+      const io = req.app.get("io") as Server;
+
       return res.send("<h1>Hello, This is Node-Python Test Page</h1>");
     });
 
