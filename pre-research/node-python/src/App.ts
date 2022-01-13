@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import routes from "./routes";
+import sse from "./sse";
 
 class App {
   server: express.Application;
@@ -10,6 +11,7 @@ class App {
     this.settingMW();
     this.Router();
     this.Start();
+    sse(this.server);
   }
 
   settingMW() {
