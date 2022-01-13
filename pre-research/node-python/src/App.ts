@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import routes from "./routes";
-import sse from "./sse";
+import cors from "cors";
 
 class App {
   server: express.Application;
@@ -11,10 +11,10 @@ class App {
     this.settingMW();
     this.Router();
     this.Start();
-    sse(this.server);
   }
 
   settingMW() {
+    this.server.use(cors());
     this.server.use(morgan("dev"));
   }
 

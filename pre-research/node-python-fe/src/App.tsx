@@ -1,13 +1,10 @@
 import React from "react";
 import axios from "axios";
-import EventSource from "eventsource";
 
 function App() {
   const formData = React.useRef<FormData>(new FormData());
 
-  React.useEffect(() => {
-    const es = new EventSource("http://localhost:8080/sse");
-  }, []);
+  React.useEffect(() => {}, []);
 
   const onChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

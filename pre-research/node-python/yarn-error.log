@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/formegusto/.nvm/versions/node/v14.15.4/bin/node /usr/local/Cellar/yarn/1.22.10/libexec/bin/yarn.js add -D @types/sse
+  /Users/formegusto/.nvm/versions/node/v14.15.4/bin/node /usr/local/Cellar/yarn/1.22.10/libexec/bin/yarn.js add -D @types/ssestream
 
 PATH: 
   /Users/formegusto/.nvm/versions/node/v14.15.4/bin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/formegusto/opt/anaconda3/bin:/Users/formegusto/opt/anaconda3/condabin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/Users/formegusto/Developer/flutter/bin:/Users/formegusto/Developer/flutter/bin
@@ -14,7 +14,7 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2fsse: Not found
+  Error: https://registry.yarnpkg.com/@types%2fssestream: Not found
       at Request.params.callback [as _callback] (/usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:66988:18)
       at Request.self.callback (/usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:140749:22)
       at Request.emit (events.js:315:20)
@@ -41,7 +41,7 @@ npm manifest:
       "express": "^4.17.2",
       "morgan": "^1.10.0",
       "multer": "^1.4.4",
-      "sse": "^0.0.8",
+      "ssestream": "^1.1.0",
       "ts-node": "^10.4.0"
     },
     "devDependencies": {
@@ -1060,11 +1060,6 @@ Lockfile:
     dependencies:
       wrappy "1"
   
-  options@0.0.6:
-    version "0.0.6"
-    resolved "https://registry.yarnpkg.com/options/-/options-0.0.6.tgz#ec22d312806bb53e731773e7cdaefcf1c643128f"
-    integrity sha1-7CLTEoBrtT5zF3Pnza788cZDEo8=
-  
   p-cancelable@^1.0.0:
     version "1.1.0"
     resolved "https://registry.yarnpkg.com/p-cancelable/-/p-cancelable-1.1.0.tgz#d078d15a3af409220c886f1d9a0ca2e441ab26cc"
@@ -1292,12 +1287,10 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.6.tgz#24e630c4b0f03fea446a2bd299e62b4a6ca8d0af"
     integrity sha512-sDl4qMFpijcGw22U5w63KmD3cZJfBuFlVNbVMKje2keoKML7X2UzWbc4XrmEbDwg0NXJc3yv4/ox7b+JWb57kQ==
   
-  sse@^0.0.8:
-    version "0.0.8"
-    resolved "https://registry.yarnpkg.com/sse/-/sse-0.0.8.tgz#5142d3c5745c064349eeefe61aef3bbb117e973b"
-    integrity sha512-cviG7JH31TUhZeaEVhac3zTzA+2FwA7qvHziAHpb7mC7RNVJ/RbHN+6LIGsS2ugP4o2H15DWmrSMK+91CboIcg==
-    dependencies:
-      options "0.0.6"
+  ssestream@^1.1.0:
+    version "1.1.0"
+    resolved "https://registry.yarnpkg.com/ssestream/-/ssestream-1.1.0.tgz#f46d046ede4797ca00e2e1b88964021cfbe7d678"
+    integrity sha512-UOS3JTuGqGEOH89mfHFwVOJNH2+JX9ebIWuw6WBQXpkVOxbdoY3RMliSHzshL4XVYJJrcul5NkuvDFCzgYu1Lw==
   
   "statuses@>= 1.5.0 < 2", statuses@~1.5.0:
     version "1.5.0"

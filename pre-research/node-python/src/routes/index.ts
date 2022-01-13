@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import childProcess from "child_process";
+import SseStream from "ssestream";
 
 class Routes {
   routes: express.Router;
@@ -61,6 +62,19 @@ class Routes {
         return res.status(201).json("file upload success");
       }
     );
+
+    this.routes.get("/sse", (req: express.Request, res: express.Response) => {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+
+      const stream = new SseStream(req);
+      stream.pipe(res);
+
+      setInterval(() => {
+        stream.write({
+          data: Date.now().toString(),
+        });
+      }, 1000);
+    });
   }
 }
 
