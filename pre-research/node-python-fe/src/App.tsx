@@ -4,6 +4,8 @@ import { connect } from "socket.io-client";
 
 function App() {
   const formData = React.useRef<FormData>(new FormData());
+  const [startTime, setStartTime] = React.useState<string>("");
+  const [endTime, setEndTime] = React.useState<string>("");
 
   React.useEffect(() => {
     const io = connect("http://localhost:8080", {
@@ -13,6 +15,14 @@ function App() {
 
     io.on("connect", () => {
       console.log("socket connected :)");
+    });
+    io.on("read-start", () => {
+      console.log("datas read start");
+      setStartTime(new Date().toISOString());
+    });
+    io.on("read-success", () => {
+      console.log("datas read success");
+      setEndTime(new Date().toISOString());
     });
   }, []);
 
@@ -41,7 +51,9 @@ function App() {
 
   return (
     <>
-      <h1>Server Sent Test</h1>
+      <h1>Socket.IO Test</h1>
+      <p>startTime:{startTime}</p>
+      <p>endTime:{endTime}</p>
       <form onSubmit={onSubmit}>
         <input type="file" name="datas" onChange={onChange} />
         <button type="submit">Test!</button>

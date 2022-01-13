@@ -15,6 +15,7 @@ function socket(server: http.Server, app: express.Application) {
 
   io.on("connection", (socket) => {
     console.log("[socket.io] connection :)");
+    app.set("socket", socket);
 
     socket.on("disconnect", () => {
       console.log("[socket.io] disconnection :)");

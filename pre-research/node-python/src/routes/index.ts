@@ -3,7 +3,7 @@ import multer from "multer";
 import path from "path";
 import childProcess from "child_process";
 import SseStream from "ssestream";
-import { Server } from "socket.io";
+import { Socket } from "socket.io";
 
 class Routes {
   routes: express.Router;
@@ -29,8 +29,6 @@ class Routes {
 
   setRouter() {
     this.routes.get("/", (req: express.Request, res: express.Response) => {
-      const io = req.app.get("io") as Server;
-
       return res.send("<h1>Hello, This is Node-Python Test Page</h1>");
     });
 
@@ -42,7 +40,10 @@ class Routes {
 
         if (filename) {
           console.log(`[Express] ${filename} read start.`);
-          console.log(`[Express] ${filename} time ${new Date()}`);
+          console.log(`[Express] ${filename} time ${Date.now()}`);
+          const socket = req.app.get("socket") as Socket;
+          socket.emit("read-start");
+
           const readExcel = childProcess.spawn("python3", [
             "python/excel_read.py",
             filename,
@@ -54,7 +55,10 @@ class Routes {
 
           readExcel.stdout.on("end", () => {
             console.log(`[Express] ${filename} read end.`);
-            console.log(`[Express] ${filename} time ${new Date()}`);
+            console.log(`[Express] ${filename} time ${Date.now()}`);
+
+            const socket = req.app.get("socket") as Socket;
+            socket.emit("read-success");
           });
 
           readExcel.stderr.on("error", (data) => {
