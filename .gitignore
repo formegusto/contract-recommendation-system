@@ -5,3 +5,5 @@ datas
 static
 dist
 node_modules
+
+__pycache__
