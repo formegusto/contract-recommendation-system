@@ -15,8 +15,13 @@ function socketConnect(server: http.Server, app: express.Application) {
 
   io.on("connection", (socket) => {
     console.log(`----[Alert.IO] Socket Connection :)----`);
-
     app.set("socket", socket);
+
+    socket.emit("alert", {
+      type: "alert-test",
+      status: true,
+    });
+
     socket.on("disconnect", () => {
       console.log(`----[Alert.IO] Socket DisConnection :)----`);
     });
