@@ -1,5 +1,4 @@
 import pandas as pd
-
 from utils.update_process import update_process
 
 

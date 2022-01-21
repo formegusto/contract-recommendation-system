@@ -12,6 +12,8 @@ const MESSAGE_TYPE: { [key: string]: string } = {
   "read-excel": "엑셀 로딩",
   "data-preprocessing": "데이터 전처리",
   "reco-process-start": "추천 서비스 시작",
+  "bill-calc": "청구서 계산",
+  analysis: "분석치 계산",
 };
 
 function App() {

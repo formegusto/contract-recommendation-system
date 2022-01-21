@@ -1,8 +1,9 @@
 import pandas as pd
 import datetime as dt
-import json
+from utils.update_process import update_process
 
 
+@update_process("data-preprocessing")
 def data_preprocessing(xlsx):
     date_df = xlsx[3:][xlsx.columns[1:6]].copy()
     household_df = xlsx[xlsx.columns[7:]]

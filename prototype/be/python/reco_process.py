@@ -12,11 +12,11 @@ if __name__ == "__main__":
     file_name = sys.argv[1]
 
     start()
-
     xlsx = load_excel(file_name)
+    p, m = data_preprocessing(xlsx)
 
-    # p, m = data_preprocessing(xlsx)
-    # req.patch(api_server + update_path, json={
-    #     "type": "data-preprocessing",
-    #     "status": True
-    # })
+    min_per = 10
+    max_per = 80
+    result = bill_calc(p, m, min_per, max_per)
+
+    analysis_result = analysis(result)
