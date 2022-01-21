@@ -3,6 +3,7 @@ import http from "http";
 import morgan from "morgan";
 import cors from "cors";
 import socketConnect from "./Socket";
+import routes from "./routes";
 
 class App {
   server: http.Server;
@@ -19,9 +20,12 @@ class App {
   SettingMW() {
     this.app.use(cors());
     this.app.use(morgan("dev"));
+    this.app.use(Express.json());
   }
 
-  Router() {}
+  Router() {
+    this.app.use(routes);
+  }
 
   Start() {
     const port = process.env.PORT || "8000";

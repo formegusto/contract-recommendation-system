@@ -7,10 +7,12 @@
     "start": "nodemon --watch src -e ts --exec 'tsc && node dist'"
   },
   "dependencies": {
+    "@types/mongoose": "^5.11.97",
     "child_process": "^1.0.2",
     "cors": "^2.8.5",
     "dotenv": "^14.2.0",
     "express": "^4.17.2",
+    "mongoose": "^6.1.7",
     "morgan": "^1.10.0",
     "multer": "^1.4.4",
     "socket.io": "^4.4.1",
