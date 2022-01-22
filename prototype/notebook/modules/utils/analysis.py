@@ -3,8 +3,48 @@ import numpy as np
 from sklearn.decomposition import TruncatedSVD
 from modules.utils.similarity_calc import *
 
+# setting_positive_negative
+
+
+def set_positive_negative(result, min_per):
+    for key in result.keys():
+        if type(result[key]) == dict:
+            comp_pattern = result[key]['comp']
+            single_pattern = result[key]['single']
+
+            for idx, c in enumerate(comp_pattern):
+                if key == "better":
+                    if c > single_pattern[idx]:
+                        result[key]['comp'] = {
+                            "positive": min_per + idx,
+                            "negative": (min_per + idx) - 1,
+                            "pattern": comp_pattern
+                        }
+                        result[key]['single'] = {
+                            "positive": (min_per + idx) - 1,
+                            "negative": min_per + idx,
+                            "pattern": single_pattern
+                        }
+                        break
+                else:
+                    if c < single_pattern[idx]:
+                        result[key]['comp'] = {
+                            "positive": min_per + idx,
+                            "negative": (min_per + idx) - 1,
+                            "pattern": comp_pattern
+                        }
+                        result[key]['single'] = {
+                            "positive": (min_per + idx) - 1,
+                            "negative": min_per + idx,
+                            "pattern": single_pattern
+                        }
+                        break
+
+    return result.copy()
 
 # setting mean datas
+
+
 def set_mean(result):
     mean_result = dict()
 
@@ -78,7 +118,8 @@ def set_analysis(result):
 
 
 def analysis(result):
+    min_per = int(result['better']['comp'].columns[0])
     return {
-        "mean": set_mean(result),
-        "anaylsis": set_analysis(result)
+        "mean": set_positive_negative(set_mean(result), min_per),
+        "anaylsis": set_positive_negative(set_analysis(result), min_per)
     }
