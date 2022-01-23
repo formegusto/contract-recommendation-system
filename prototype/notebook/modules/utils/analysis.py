@@ -73,10 +73,12 @@ def get_analysis_pattern(target_df):
     reco_df = pd.DataFrame(columns=['차원축소 사이즈', '추천 인덱스'])
     while dr_size >= 2:
         if dr_size == c:
-            dr_matrix = norm_matrix
+            # dr_matrix = norm_matrix
+            dr_matrix = matrix
         else:
             SVD = TruncatedSVD(n_components=dr_size)
-            dr_matrix = SVD.fit_transform(norm_matrix)
+            # dr_matrix = SVD.fit_transform(norm_matrix)
+            dr_matrix = SVD.fit_transform(matrix)
 
         imp = np.array([])
         for A in dr_matrix:
@@ -97,6 +99,7 @@ def get_analysis_pattern(target_df):
         dr_size -= 1
 
     recos = list(set(reco_df['추천 인덱스']))
+    print(recos)
 
     analysis_pattern = np.array([])
     for reco_idx in recos:
