@@ -34,14 +34,24 @@ class Household:
     @property
     def elec_rate(self):
         kwh = self.kwh
+        step = 0
+
         fee = 0
-        for _ in self.contract:
-            if kwh <= _[1]:
+        for idx, _ in enumerate(self.contract):
+            if (kwh + step) <= _[1]:
                 fee += (kwh * _[3])
                 break
             else:
-                kwh -= _[1]
-                fee += (_[1] * _[3])
+                next_step = _[1]
+                if idx == 0:
+                    kwh -= _[1]
+                    step += _[1]
+                else:
+                    prev = self.contract[idx-1]
+                    next_step = (_[1] - prev[1])
+                    kwh -= next_step
+                    step += next_step
+                fee += (next_step * _[3])
 
         return mt.floor(fee)
 

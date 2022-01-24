@@ -105,7 +105,6 @@ class ManagementOffice:
 
     # 요금제 셋팅 메서드
     def select_fee(self, month, contract, general_fee_info):
-
         if contract == "종합계약":
             household_fee = None
             public_fee = None
@@ -123,7 +122,7 @@ class ManagementOffice:
                 tmp_general_fee = general_fee[general_fee_info]
             elif len(general_fee_info) == 2:
                 tmp_general_fee = general_fee[general_fee_info[0]]
-                tmp_general_fee = tmp_general_fee[general_fee_info[1]]
+                tmp_general_fee = tmp_general_fee[general_fee_info[1] - 1]
             else:
                 raise Exception("일반용 전력 설정이 올바르지 않습니다\n"
                                 + "저압, [고압 A, 0 or 1], [고압 B, 0 or 1]")
