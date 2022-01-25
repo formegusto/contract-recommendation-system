@@ -1,3 +1,4 @@
+from pydoc import apropos
 from modules.models import Household, Public
 from modules.common import *
 import math as mt
@@ -59,7 +60,7 @@ class ManagementOffice:
             # 전체를 하나의 가구 본 상태에서 계약대로 계산식 진행
             # 후에 * len(household) 를 통해 아파트 전체 요금 통지서 확보
             num_household = len(households)
-            mean_kwh = APT / num_household
+            mean_kwh = mt.floor(APT / num_household)
 
             apart = Household(
                 name="아파트",

@@ -57,10 +57,12 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
         # 3. 계약별 공공설비사용요금 변화
         public_bill_comp_rows = np.array([])
         public_bill_single_rows = np.array([])
+        APTs = np.array([])
 
         for PUBLIC_PERCENTAGE in range(min_per, max_per + 1):
             households_kWh = sum(month_datas_df['usage (kWh)'].values)
             APT = round((households_kWh * 100) / (100 - PUBLIC_PERCENTAGE))
+            APTs = np.append(APTs, APT)
             public_kWh = round(APT - households_kWh)
 
             # 종합계약
@@ -132,6 +134,9 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
         )
 
     return {
+        "information": {
+            "apts": APTs
+        },
         "better": {
             "comp": better_comp_df,
             "single": better_single_df
