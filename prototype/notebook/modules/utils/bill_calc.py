@@ -4,6 +4,7 @@ from modules.models import *
 
 
 def bill_calc(month_usage_df, peak_df, min_per, max_per):
+
     analysis_df = month_usage_df.set_index("month")
 
     # 출력 데이터
@@ -19,7 +20,8 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
     public_bill_comp_df = pd.DataFrame()
     public_bill_single_df = pd.DataFrame()
 
-    for month in range(1, 13):
+    for month in analysis_df.index:
+        print(month)
         # 1. 월별 사용량 데이터 파싱
         month_datas_df = pd.DataFrame(columns=["name", "usage (kWh)"])
         for idx in analysis_df.loc[month].index:
