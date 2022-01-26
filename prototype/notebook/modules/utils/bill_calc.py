@@ -59,6 +59,9 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
         public_bill_single_rows = np.array([])
         APTs = np.array([])
 
+        # 4. percentage 별 comp, single 유리에 속해있는 가구
+        positive_households = np.array([])
+
         for PUBLIC_PERCENTAGE in range(min_per, max_per + 1):
             households_kWh = sum(month_datas_df['usage (kWh)'].values)
             APT = round((households_kWh * 100) / (100 - PUBLIC_PERCENTAGE))
@@ -89,14 +92,24 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
             draw_cnt = 0
             single_cnt = 0
 
+            comp_households = np.array([])
+            single_households = np.array([])
             # 1. 유불리 계산
             for idx in range(0, cnt):
                 if calc.households[idx].bill > single_calc.households[idx].bill:
                     single_cnt += 1
+                    single_households = np.append(single_households, {
+                        "name": calc.households[idx].name,
+                        "kwh": calc.households[idx].kwh
+                    })
                 elif calc.households[idx].bill < single_calc.households[idx].bill:
                     comp_cnt += 1
+                    comp_households = np.append(comp_households, {
+                        "name": calc.households[idx].name,
+                        "kwh": calc.households[idx].kwh
+                    })
                 else:
-                    draw_cnt
+                    draw_cnt += 1
 
             better_comp_rows = np.append(better_comp_rows, comp_cnt)
             better_single_rows = np.append(better_single_rows, single_cnt)
@@ -108,6 +121,11 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
                 public_bill_comp_rows, calc.public_bill)
             public_bill_single_rows = np.append(
                 public_bill_single_rows, single_calc.public_bill)
+
+            positive_households = np.append(positive_households, {
+                "comp": comp_households,
+                "single": single_households
+            })
 
         # 월 데이터 셋팅
         better_comp_df = better_comp_df.append(
@@ -135,7 +153,8 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
 
     return {
         "information": {
-            "apts": APTs
+            "apts": APTs,
+            "positive_households": positive_households
         },
         "better": {
             "comp": better_comp_df,
