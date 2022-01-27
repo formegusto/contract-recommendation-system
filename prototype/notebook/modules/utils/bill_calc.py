@@ -21,7 +21,7 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
     public_bill_single_df = pd.DataFrame()
 
     for month in analysis_df.index:
-        print(month)
+        print("{} 월 계산 진행 합니다.".format(month))
         # 1. 월별 사용량 데이터 파싱
         month_datas_df = pd.DataFrame(columns=["name", "usage (kWh)"])
         for idx in analysis_df.loc[month].index:
@@ -62,6 +62,29 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
         # 4. percentage 별 comp, single 유리에 속해있는 가구
         positive_households = np.array([])
 
+        # 5. 계약별 최소, 중간, 최대 가구 요금 기록
+        min_value = month_datas_df[month_datas_df['usage (kWh)'] >= 100]['usage (kWh)'].values.min(
+        )
+        min_h_idx = np.abs(
+            month_datas_df['usage (kWh)'].values - min_value).argmin()
+        max_h_idx = month_datas_df['usage (kWh)'].values.argmax()
+        mean = round(month_datas_df['usage (kWh)'].values.mean())
+        mean_h_idx = np.abs(
+            month_datas_df['usage (kWh)'].values - mean).argmin()
+
+        min_kwh_info = {
+            "comp": np.array([]),
+            "single": np.array([])
+        }
+        mean_kwh_info = {
+            "comp": np.array([]),
+            "single": np.array([])
+        }
+        max_kwh_info = {
+            "comp": np.array([]),
+            "single": np.array([])
+        }
+
         for PUBLIC_PERCENTAGE in range(min_per, max_per + 1):
             households_kWh = sum(month_datas_df['usage (kWh)'].values)
             APT = round((households_kWh * 100) / (100 - PUBLIC_PERCENTAGE))
@@ -94,15 +117,34 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
 
             comp_households = np.array([])
             single_households = np.array([])
+
             # 1. 유불리 계산
             for idx in range(0, cnt):
-                if calc.households[idx].bill > single_calc.households[idx].bill:
+                calc_bill = calc.households[idx].bill
+                single_bill = single_calc.households[idx].bill
+                if idx == min_h_idx:
+                    min_kwh_info = {
+                        "comp": np.append(min_kwh_info['comp'], calc_bill),
+                        "single": np.append(min_kwh_info['single'], single_bill)
+                    }
+                if idx == mean_h_idx:
+                    mean_kwh_info = {
+                        "comp": np.append(mean_kwh_info['comp'], calc_bill),
+                        "single": np.append(mean_kwh_info['single'], single_bill)
+                    }
+                if idx == max_h_idx:
+                    max_kwh_info = {
+                        "comp": np.append(max_kwh_info['comp'], calc_bill),
+                        "single": np.append(max_kwh_info['single'], single_bill)
+                    }
+
+                if calc_bill > single_bill:
                     single_cnt += 1
                     single_households = np.append(single_households, {
                         "name": calc.households[idx].name,
                         "kwh": calc.households[idx].kwh
                     })
-                elif calc.households[idx].bill < single_calc.households[idx].bill:
+                elif calc_bill < single_bill:
                     comp_cnt += 1
                     comp_households = np.append(comp_households, {
                         "name": calc.households[idx].name,
@@ -154,7 +196,12 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
     return {
         "information": {
             "apts": APTs,
-            "positive_households": positive_households
+            "positive_households": positive_households,
+            "compare_households": {
+                "min_household": min_kwh_info,
+                "mean_household": mean_kwh_info,
+                "max_household": max_kwh_info
+            }
         },
         "better": {
             "comp": better_comp_df,
