@@ -20,6 +20,9 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
     public_bill_comp_df = pd.DataFrame()
     public_bill_single_df = pd.DataFrame()
 
+    comp_loss_ratio_df = pd.DataFrame()
+    single_loss_ratio_df = pd.DataFrame()
+
     for month in analysis_df.index:
         print("{} 월 계산 진행 합니다.".format(month))
         # 1. 월별 사용량 데이터 파싱
@@ -58,6 +61,9 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
         public_bill_comp_rows = np.array([])
         public_bill_single_rows = np.array([])
         APTs = np.array([])
+
+        loss_ratio_comp_rows = np.array([])
+        loss_ratio_single_rows = np.array([])
 
         # 4. percentage 별 comp, single 유리에 속해있는 가구
         positive_households = np.array([])
@@ -119,32 +125,44 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
             single_households = np.array([])
 
             # 1. 유불리 계산
+            # 2. 손실율 계산
+            comp_loss_ratio = np.array([])
+            single_loss_ratio = np.array([])
             for idx in range(0, cnt):
-                calc_bill = calc.households[idx].bill
+                comp_bill = calc.households[idx].bill
                 single_bill = single_calc.households[idx].bill
                 if idx == min_h_idx:
                     min_kwh_info = {
-                        "comp": np.append(min_kwh_info['comp'], calc_bill),
+                        "comp": np.append(min_kwh_info['comp'], comp_bill),
                         "single": np.append(min_kwh_info['single'], single_bill)
                     }
                 if idx == mean_h_idx:
                     mean_kwh_info = {
-                        "comp": np.append(mean_kwh_info['comp'], calc_bill),
+                        "comp": np.append(mean_kwh_info['comp'], comp_bill),
                         "single": np.append(mean_kwh_info['single'], single_bill)
                     }
                 if idx == max_h_idx:
                     max_kwh_info = {
-                        "comp": np.append(max_kwh_info['comp'], calc_bill),
+                        "comp": np.append(max_kwh_info['comp'], comp_bill),
                         "single": np.append(max_kwh_info['single'], single_bill)
                     }
 
-                if calc_bill > single_bill:
+                comp_loss_ratio = np.append(comp_loss_ratio,
+                                            round(comp_bill / single_bill
+                                                  * 100)
+                                            )
+                single_loss_ratio = np.append(single_loss_ratio,
+                                              round(single_bill / comp_bill
+                                                    * 100)
+                                              )
+
+                if comp_bill > single_bill:
                     single_cnt += 1
                     single_households = np.append(single_households, {
                         "name": calc.households[idx].name,
                         "kwh": calc.households[idx].kwh
                     })
-                elif calc_bill < single_bill:
+                elif comp_bill < single_bill:
                     comp_cnt += 1
                     comp_households = np.append(comp_households, {
                         "name": calc.households[idx].name,
@@ -158,6 +176,11 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
 
             bill_comp_rows = np.append(bill_comp_rows, calc.bill)
             bill_single_rows = np.append(bill_single_rows, single_calc.bill)
+
+            loss_ratio_comp_rows = np.append(
+                loss_ratio_comp_rows, round(comp_loss_ratio.mean()))
+            loss_ratio_single_rows = np.append(
+                loss_ratio_single_rows, round(single_loss_ratio.mean()))
 
             public_bill_comp_rows = np.append(
                 public_bill_comp_rows, calc.public_bill)
@@ -193,6 +216,15 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
                 _) for _ in range(min_per, max_per + 1)], name=month)
         )
 
+        comp_loss_ratio_df = comp_loss_ratio_df.append(
+            pd.Series(loss_ratio_comp_rows, index=["{}".format(
+                _) for _ in range(min_per, max_per + 1)], name=month)
+        )
+        single_loss_ratio_df = single_loss_ratio_df.append(
+            pd.Series(loss_ratio_single_rows, index=["{}".format(
+                _) for _ in range(min_per, max_per + 1)], name=month)
+        )
+
     return {
         "information": {
             "apts": APTs,
@@ -201,6 +233,9 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
                 "min_household": min_kwh_info,
                 "mean_household": mean_kwh_info,
                 "max_household": max_kwh_info
+            },
+            "mean_hist": {
+
             }
         },
         "better": {
@@ -214,5 +249,9 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
         "public_bill": {
             "comp": public_bill_comp_df,
             "single": public_bill_single_df
+        },
+        "loss_ratio": {
+            "comp": comp_loss_ratio_df,
+            "single": single_loss_ratio_df
         }
     }
