@@ -29,6 +29,8 @@ def get_analysis(bc_result, pos_cnt, loss_ratio):
             if Ss[idx] > c:
                 bill_change_per = np.append(bill_change_per, idx + min_per)
                 break
+            if idx == (len(Cs) - 1):
+                bill_change_per = np.append(bill_change_per, 101)
 
     # 2. 공동설비사용 요금
     public_bill_change_per = np.array([])
@@ -41,6 +43,9 @@ def get_analysis(bc_result, pos_cnt, loss_ratio):
                 public_bill_change_per = np.append(
                     public_bill_change_per, idx + min_per)
                 break
+            if idx == (len(Cs) - 1):
+                public_bill_change_per = np.append(
+                    public_bill_change_per, 101)
 
     # 3. 유리가구 수
     pos_cnt_change_per = np.array([])
@@ -53,6 +58,9 @@ def get_analysis(bc_result, pos_cnt, loss_ratio):
                 pos_cnt_change_per = np.append(
                     pos_cnt_change_per, idx + min_per)
                 break
+            if idx == (len(Cs) - 1):
+                pos_cnt_change_per = np.append(
+                    pos_cnt_change_per, 101)
 
     # 4. 손실율
     loss_ratio_change_per = np.array([])
@@ -65,6 +73,9 @@ def get_analysis(bc_result, pos_cnt, loss_ratio):
                 loss_ratio_change_per = np.append(
                     loss_ratio_change_per, idx + min_per)
                 break
+            if idx == (len(Cs) - 1):
+                loss_ratio_change_per = np.append(
+                    loss_ratio_change_per, 101)
 
     return bill_change_per, public_bill_change_per, pos_cnt_change_per, loss_ratio_change_per
 

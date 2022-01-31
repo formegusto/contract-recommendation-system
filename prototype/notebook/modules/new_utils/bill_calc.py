@@ -23,6 +23,9 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
     public_comp_bill = pd.DataFrame()
     public_single_bill = pd.DataFrame()
 
+    # 4. 정보 : 가구 수, 표준편차, 평균, 변동계수
+    information = list()
+
     for month in analysis_df.index:
         print("{} 월 계산 진행 합니다.".format(month))
 
@@ -116,11 +119,27 @@ def bill_calc(month_usage_df, peak_df, min_per, max_per):
                 _) for _ in range(min_per, max_per + 1)], name=month)
         )
 
+        count = month_datas_df['usage (kWh)'].count()
+        mean = round(month_datas_df['usage (kWh)'].mean())
+        std = round(month_datas_df['usage (kWh)'].std())
+        rsd = round(std/mean * 100)
+
+        print("가구 수: {} / 평균: {} / 표준편차: {} / 변동계수: {}".format(count, mean, std, rsd))
+
+        infos = {
+            "count": count,
+            "mean": mean,
+            "std": std,
+            "rsd": rsd
+        }
+        information.append(infos)
+
     return {
         "params": {
             "min_per": min_per,
             "max_per": max_per
         },
+        "information": information,
         "households_bill": {
             "comp": household_comp_bill,
             "single": household_single_bill,
