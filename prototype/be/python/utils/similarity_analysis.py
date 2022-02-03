@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
-from modules.new_utils import bill_calc, normal_analysis, improved_similarity
+from utils import bill_calc, normal_analysis, improved_similarity
 from sklearn.decomposition import TruncatedSVD
+from utils.update_process import update_process
 
 
 def get_reco_idx(month_usage_df):
@@ -37,6 +38,7 @@ def get_reco_idx(month_usage_df):
     return recos
 
 
+@update_process("similarity-analysis")
 def similarity_analysis(month_usage_df, peak_df, min_per, max_per):
     recos = get_reco_idx(month_usage_df)
     analysis_targets = month_usage_df.set_index(

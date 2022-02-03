@@ -95,7 +95,11 @@ class ManagementOffice:
             households_bill = sum(
                 [_.elec_bill_vat_fund for _ in self.households]
             )
-            self.public_bill = self.bill - households_bill
+            if households_bill > self.bill:
+                self.bill = households_bill
+                self.public_bill = 0
+            else:
+                self.public_bill = self.bill - households_bill
 
             # 가구별 청구서 셋팅
             public_fee = round(self.public_bill / len(self.households))

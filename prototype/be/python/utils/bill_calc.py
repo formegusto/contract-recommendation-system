@@ -5,63 +5,59 @@ from utils.update_process import update_process
 
 
 @update_process("bill-calc")
-def bill_calc(peak_df, month_usage_df, min_per, max_per):
+def bill_calc(month_usage_df, peak_df, min_per, max_per):
     analysis_df = month_usage_df.set_index("month")
 
     # 출력 데이터
-    # 1. 계약별 유, 불리 가구 수
-    better_comp_df = pd.DataFrame()
-    better_single_df = pd.DataFrame()
+    # 1. household_bill [DataFrame] month sort
+    # - 가구별 개인 청구서
+    # - numpy array 가 DataFrame을 numpy 화 시켜서 합쳐버리는 현상이 있음
+    household_comp_bill = list()
+    household_single_bill = list()
 
-    # 2. 계약별 아파트 전체 요금 변화
-    bill_comp_df = pd.DataFrame()
-    bill_single_df = pd.DataFrame()
+    # 2. bill DataFrame
+    # - 아파트 전체 청구서
+    comp_bill = pd.DataFrame()
+    single_bill = pd.DataFrame()
 
-    # 3. 계약별 공공설비사용요금 변화
-    public_bill_comp_df = pd.DataFrame()
-    public_bill_single_df = pd.DataFrame()
+    # 3. public_bill DataFrame
+    # - 공동설비사용요금 청구서
+    public_comp_bill = pd.DataFrame()
+    public_single_bill = pd.DataFrame()
 
-    for month in range(1, 13):
+    # 4. 정보 : 가구 수, 표준편차, 평균, 변동계수
+    information = list()
+
+    for month in analysis_df.index:
         # 1. 월별 사용량 데이터 파싱
         month_datas_df = pd.DataFrame(columns=["name", "usage (kWh)"])
+        household_names = np.array([])
         for idx in analysis_df.loc[month].index:
             household_name = idx
             household_kWh = analysis_df.loc[month][idx]
+            household_names = np.append(household_names, idx)
 
             month_datas_df = month_datas_df.append({
                 "name": household_name,
                 "usage (kWh)": household_kWh
             }, ignore_index=True)
 
-        # Thinking
-        # 세대부 전기는 정해져 있는데,
-        # 공용부 전기는 정해져 있지가 않아서 입력되는 percentage에 따라, 변화하도록
+        # 세대부 사용량 계산 저장용 변수
+        households_kWh = sum(month_datas_df['usage (kWh)'].values)
+        households_cnt = len(month_datas_df['usage (kWh)'].values)
+        month_household_comp_bill = pd.DataFrame(columns=household_names)
+        month_household_single_bill = pd.DataFrame(columns=household_names)
 
-        # 다음과 같은 공식을 사용할 수 있다.
-        # n -> 공용부가 전체 APT에서 차지할 percentage
-        # APT : households_kWh = 100 : (100 - n)
-        # APT : public_kWh = 100 : n
-
-        # 이에 따라,
-        # APT = (households_kWh * 100) / (100 - n)
-        # public_kwh = APT - households_kwh
-
-        # 1. 계약별 유, 불리 가구 수
-        better_comp_rows = np.array([])
-        better_single_rows = np.array([])
-
-        # 2. 계약별 아파트 전체 요금 변화
+        # 아파트 전체 요금 저장용 변수
         bill_comp_rows = np.array([])
         bill_single_rows = np.array([])
 
-        # 3. 계약별 공공설비사용요금 변화
+        # 공동설비요금 저장용 변수
         public_bill_comp_rows = np.array([])
         public_bill_single_rows = np.array([])
 
         for PUBLIC_PERCENTAGE in range(min_per, max_per + 1):
-            households_kWh = sum(month_datas_df['usage (kWh)'].values)
             APT = round((households_kWh * 100) / (100 - PUBLIC_PERCENTAGE))
-            public_kWh = round(APT - households_kWh)
 
             # 종합계약
             calc = ManagementOffice(
@@ -82,22 +78,17 @@ def bill_calc(peak_df, month_usage_df, min_per, max_per):
                 contract="단일계약"
             )
 
-            cnt = len(calc.households)
-            comp_cnt = 0
-            draw_cnt = 0
-            single_cnt = 0
+            # 가구 최종청구서 파싱
+            comp_household_bill_rows = np.array([])
+            single_household_bill_rows = np.array([])
+            for idx in range(0, households_cnt):
+                comp_household_bill_rows = np.append(
+                    comp_household_bill_rows, calc.households[idx].bill)
+                single_household_bill_rows = np.append(
+                    single_household_bill_rows, single_calc.households[idx].bill)
 
-            # 1. 유불리 계산
-            for idx in range(0, cnt):
-                if calc.households[idx].bill > single_calc.households[idx].bill:
-                    single_cnt += 1
-                elif calc.households[idx].bill < single_calc.households[idx].bill:
-                    comp_cnt += 1
-                else:
-                    draw_cnt
-
-            better_comp_rows = np.append(better_comp_rows, comp_cnt)
-            better_single_rows = np.append(better_single_rows, single_cnt)
+            month_household_comp_bill.loc[PUBLIC_PERCENTAGE] = comp_household_bill_rows
+            month_household_single_bill.loc[PUBLIC_PERCENTAGE] = single_household_bill_rows
 
             bill_comp_rows = np.append(bill_comp_rows, calc.bill)
             bill_single_rows = np.append(bill_single_rows, single_calc.bill)
@@ -107,41 +98,58 @@ def bill_calc(peak_df, month_usage_df, min_per, max_per):
             public_bill_single_rows = np.append(
                 public_bill_single_rows, single_calc.public_bill)
 
-        # 월 데이터 셋팅
-        better_comp_df = better_comp_df.append(
-            pd.Series(better_comp_rows, index=["{}".format(_) for _ in range(min_per, max_per + 1)], name=month))
-        better_single_df = better_single_df.append(
-            pd.Series(better_single_rows, index=["{}".format(_) for _ in range(min_per, max_per + 1)], name=month))
+        household_comp_bill.append(month_household_comp_bill)
+        household_single_bill.append(month_household_single_bill)
 
-        bill_comp_df = bill_comp_df.append(
+        comp_bill = comp_bill.append(
             pd.Series(bill_comp_rows, index=["{}".format(
                 _) for _ in range(min_per, max_per + 1)], name=month)
         )
-        bill_single_df = bill_single_df.append(
+        single_bill = single_bill.append(
             pd.Series(bill_single_rows, index=["{}".format(
                 _) for _ in range(min_per, max_per + 1)], name=month)
         )
 
-        public_bill_comp_df = public_bill_comp_df.append(
+        public_comp_bill = public_comp_bill.append(
             pd.Series(public_bill_comp_rows, index=["{}".format(
                 _) for _ in range(min_per, max_per + 1)], name=month)
         )
-        public_bill_single_df = public_bill_single_df.append(
+        public_single_bill = public_single_bill.append(
             pd.Series(public_bill_single_rows, index=["{}".format(
                 _) for _ in range(min_per, max_per + 1)], name=month)
         )
 
+        count = month_datas_df['usage (kWh)'].count()
+        mean = round(month_datas_df['usage (kWh)'].mean())
+        std = round(month_datas_df['usage (kWh)'].std())
+        rsd = round(std/mean * 100)
+
+        print("가구 수: {} / 평균: {} / 표준편차: {} / 변동계수: {}".format(count, mean, std, rsd))
+
+        infos = {
+            "count": count,
+            "mean": mean,
+            "std": std,
+            "rsd": rsd
+        }
+        information.append(infos)
+
     return {
-        "better": {
-            "comp": better_comp_df,
-            "single": better_single_df
+        "params": {
+            "min_per": min_per,
+            "max_per": max_per
+        },
+        "information": information,
+        "households_bill": {
+            "comp": household_comp_bill,
+            "single": household_single_bill,
         },
         "bill": {
-            "comp": bill_comp_df,
-            "single": bill_single_df
+            "comp": comp_bill,
+            "single": single_bill
         },
         "public_bill": {
-            "comp": public_bill_comp_df,
-            "single": public_bill_single_df
+            "comp": public_comp_bill,
+            "single": public_single_bill
         }
     }

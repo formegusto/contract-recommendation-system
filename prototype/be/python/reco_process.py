@@ -1,6 +1,5 @@
 from utils import *
 import sys
-import requests as req
 
 
 @update_process("reco-process-start")
@@ -17,6 +16,9 @@ if __name__ == "__main__":
 
     min_per = 10
     max_per = 80
-    result = bill_calc(p, m, min_per, max_per)
+    bc_result = bill_calc(m, p, min_per, max_per)
 
-    analysis_result = analysis(result)
+    na_result = normal_analysis(bc_result)
+
+    mean_result = mean_analysis(m, p, min_per, max_per)
+    anal_result = similarity_analysis(m, p, min_per, max_per)

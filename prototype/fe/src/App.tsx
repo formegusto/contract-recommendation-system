@@ -13,7 +13,9 @@ const MESSAGE_TYPE: { [key: string]: string } = {
   "data-preprocessing": "데이터 전처리",
   "reco-process-start": "추천 서비스 시작",
   "bill-calc": "청구서 계산",
-  analysis: "분석치 계산",
+  "normal-analysis": "일반 분석",
+  "mean-analysis": "평균 분석",
+  "similarity-analysis": "유사도 분석",
 };
 
 function App() {
