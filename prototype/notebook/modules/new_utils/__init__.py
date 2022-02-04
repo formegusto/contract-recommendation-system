@@ -3,9 +3,11 @@ from modules.new_utils.normal_analysis import normal_analysis
 from modules.new_utils.mean_analysis import mean_analysis
 from modules.new_utils.similarity_analysis import *
 from modules.new_utils.similarity_calc import *
+from modules.new_utils.load_excel import load_excel
+from modules.new_utils.data_preprocessing import data_preprocessing
 
 __all__ = ['bill_calc', 'normal_analysis',
            'mean_analysis', 'similarity_analysis', 'get_reco_idx',
            'euclidean_distance', 'cosine_similarity', 'corr', 'sumDiffer',
-           'improved_similarity']
+           'improved_similarity', 'load_excel', 'data_preprocessing']
 __version__ = "0.1.5"
