@@ -2,7 +2,7 @@ import pandas as pd
 import datetime as dt
 
 
-def data_preprocessing(xlsx):
+def data_preprocessing(xlsx, db_processing=False):
     date_df = xlsx[3:][xlsx.columns[1:6]].copy()
     household_df = xlsx[xlsx.columns[7:]]
 
@@ -52,7 +52,46 @@ def data_preprocessing(xlsx):
             for month in range(1, 13)
         ]
 
+    if db_processing:
+        peaks = list()
+        for idx in peak_df.index:
+            month = peak_df.loc[idx]['month']
+            peak = peak_df.loc[idx]['peak (kW)']
+            in_dict = dict({
+                "month": month,
+                "peak": peak
+            })
+
+            peaks.append(in_dict)
+
+        month_idx_m = month_usage_df.set_index("month")
+        month_usages = list()
+        for idx in month_idx_m.index:
+            month = idx
+            households_name = month_idx_m.columns.values.tolist()
+            households_kwh = month_idx_m.loc[idx].values.tolist()
+
+            in_dict = dict({
+                "month": month,
+                "name": households_name,
+                "kwh": households_kwh
+            })
+
+            month_usages.append(in_dict)
+
+        in_db = {
+            "peak": peaks,
+            "month_usage": month_usages
+        }
+
+        return (
+            peak_df,
+            month_usage_df,
+            in_db
+        )
+
     return (
         peak_df,
-        month_usage_df
+        month_usage_df,
+        None
     )
